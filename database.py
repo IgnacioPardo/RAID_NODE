@@ -1,4 +1,6 @@
 import os, psutil, pickle, codecs
+from packages import *
+check_for_pkg("psutil")
 
 class DB():
 
@@ -79,19 +81,24 @@ class DB():
 		self.u_db()
 
 	def set(self, nData, _id=None):
+		if _id == 'None':
+			_id = None
 		if _id:
-			self.data[_id] = nData
+			_id = int(_id)
+			for k in nData.keys():
+				self.data[_id][k] = nData[k]
+			self.u_db()
 			return _id
 		for d in self.defaults:
 			if d not in nData.keys():
 				nData[d] = self.defaults[d]
-		new_id = max(list(self.data.keys()))+1 if len(self.data) else 0
+		new_id = max(list([int(a) for a in self.data.keys()]))+1 if len(self.data) else 0
 		self.data[new_id] = nData
 		self.u_db()
 		return new_id
 
 	def get(self, _id):
-		return self.data[_id]
+		return self.data[int(_id)]
 
 	def getAll(self):
 		return self.data
